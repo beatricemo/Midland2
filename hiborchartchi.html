@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  </head>
+  <body>
+    <div id="hibor-graph"></div>
+    <script>
+      Plotly.d3.json("https://api.hkma.gov.hk/public/market-data-and-statistics/monthly-statistical-bulletin/er-ir/hk-interbank-ir-daily?segment=hibor.fixing", function(data) {
+        var df = data.result.records;
+
+    for (var i = 0; i < df.length; i++) {
+      df[i].end_of_day = new Date(df[i].end_of_day);
+    }
+
+    var x_value = "end_of_day";
+    var y_value = ["ir_overnight", "ir_1w", "ir_1m", "ir_3m"];
+
+    var layout = {
+      title: "香港銀行同業拆息（hibor）走勢",
+      xaxis: {
+        title: "日期"
+      },
+      yaxis: {
+        title: "HIBOR利率(%)"
+      }
+    };
+
+    Plotly.newPlot("hibor-graph", [{      x: df.map(row => row[x_value]),
+      y: df.map(row => row[y_value[0]]),
+      type: "line",
+      name: "隔夜銀行同業拆息"
+    }, {
+      x: df.map(row => row[x_value]),
+      y: df.map(row => row[y_value[1]]),
+      type: "line",
+      name: "一星期同業拆息"
+    }, {
+      x: df.map(row => row[x_value]),
+      y: df.map(row => row[y_value[2]]),
+      type: "line",
+      name: "一個月同業拆息"
+    }, {
+      x: df.map(row => row[x_value]),
+      y: df.map(row => row[y_value[3]]),
+      type: "line",
+      name: "三個月同業拆息"
+    }], layout);
+  });
+</script>
+
+  </body>
+</html>
