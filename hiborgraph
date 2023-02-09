@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  </head>
+  <body>
+    <div id="hibor-chart"></div>
+    <script>
+      // retrieve the HIBOR data from the HKMA API
+      const response = await fetch("https://api.hkma.gov.hk/public/market-data-and-statistics/monthly-statistical-bulletin/er-ir/hk-interbank-ir-daily?segment=hibor.fixing");
+      const data = await response.json();
+
+      // convert the data to a JSON object
+      const records = data.result.records;
+
+      // format the date field as a date
+      records.forEach(record => {
+        record.日期 = new Date(record.end_of_day);
+      });
+
+      // create an interactive line chart using Plotly.js
+      Plotly.newPlot("hibor-chart", [{
+        x: records.map(record => record.日期),
+        y: records.map(record => record.隔夜),
+        type: 'line',
+        name: '隔夜',
+      }, {
+        x: records.map(record => record.日期),
+        y: records.map(record => record["1星期"]),
+        type: 'line',
+        name: '1星期',
+      }, {
+        x: records.map(record => record.日期),
+        y: records.map(record => record["1個月"]),
+        type: 'line',
+        name: '1個月',
+      }, {
+        x: records.map(record => record.日期),
+        y: records.map(record => record["3個月"]),
+        type: 'line',
+        name: '3個月',
+      }], {
+        title: {
+          text: '香港銀行同業拆息 (HIBOR)'
+        },
+        xaxis: {
+          title: {
+            text: '日期'
+          }
+        },
+        yaxis: {
+          title: {
+            text: ''
+          }
+        },
+        showlegend: true
+      });
+    </script>
+  </body>
+</html>
